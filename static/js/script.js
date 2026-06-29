@@ -4,105 +4,105 @@ const menuItems = [
         name: "Classic Idli",
         description: "Soft, fluffy steamed rice cakes served with sambar and two types of chutney.",
         price: 40,
-        image: "/static/images/classic_idli.jpg"
+        image: "static/images/classic_idli.jpg"
     },
     {
         id: 2,
         name: "Masala Dosa",
         description: "Crispy golden crepe stuffed with spiced potato filling. A South Indian classic.",
         price: 70,
-        image: "/static/images/masala_dosa.jpg"
+        image: "static/images/masala_dosa.jpg"
     },
     {
         id: 3,
         name: "Medu Vada",
         description: "Crispy lentil doughnuts with a fluffy interior, perfect with hot filter coffee.",
         price: 35,
-        image: "/static/images/medu_vada.jpg"
+        image: "static/images/medu_vada.jpg"
     },
     {
         id: 4,
         name: "Ven Pongal",
         description: "Comforting rice and lentil dish tempered with black pepper, cumin, and ghee.",
         price: 60,
-        image: "/static/images/ven_pongal.jpg"
+        image: "static/images/ven_pongal.jpg"
     },
     {
         id: 5,
         name: "Hyderabadi Dum Biryani",
         description: "Aromatic basmati rice cooked with fragrant spices and tender marinated meat/veg.",
         price: 180,
-        image: "/static/images/dum_biryani.jpg"
+        image: "static/images/dum_biryani.jpg"
     },
     {
         id: 6,
         name: "Filter Coffee",
         description: "Strong, sweet, and frothy traditional South Indian coffee served in a brass tumbler.",
         price: 25,
-        image: "/static/images/filter_coffee.jpg"
+        image: "static/images/filter_coffee.jpg"
     },
     {
         id: 7,
         name: "Onion Uttapam",
         description: "Thick, savory pancake topped with finely chopped onions, green chilies, and coriander.",
         price: 55,
-        image: "/static/images/onion_uttapam.jpg"
+        image: "static/images/onion_uttapam.jpg"
     },
     {
         id: 8,
         name: "South Indian Meals (Thali)",
         description: "A complete feast with rice, sambar, rasam, kootu, poriyal, papad, and payasam.",
         price: 150,
-        image: "/static/images/south_indian_thali.jpg"
+        image: "static/images/south_indian_thali.jpg"
     },
     {
         id: 9,
         name: "Lemon Rice",
         description: "Tangy and flavorful rice tempered with mustard seeds, curry leaves, peanuts, and lemon.",
         price: 65,
-        image: "/static/images/lemon_rice.jpg"
+        image: "static/images/lemon_rice.jpg"
     },
     {
         id: 10,
         name: "Appam with Stew",
         description: "Lace-edged rice hoppers served with a mild, fragrant coconut milk-based vegetable stew.",
         price: 90,
-        image: "/static/images/appam_stew.jpg"
+        image: "static/images/appam_stew.jpg"
     },
     {
         id: 11,
         name: "Ghee Roast Dosa",
         description: "A massive, paper-thin crispy dosa shaped like a cone, dripping with aromatic pure ghee.",
         price: 95,
-        image: "/static/images/ghee_roast_dosa.jpg"
+        image: "static/images/ghee_roast_dosa.jpg"
     },
     {
         id: 12,
         name: "Puttu & Kadala Curry",
         description: "Steamed cylinders of ground rice and coconut, paired with spicy black chickpea curry.",
         price: 85,
-        image: "/static/images/puttu_kadala.jpg"
+        image: "static/images/puttu_kadala.jpg"
     },
     {
         id: 13,
         name: "Malabar Parotta",
         description: "Flaky, multi-layered flatbread pan-fried to perfection, served with rich spicy curry.",
         price: 60,
-        image: "/static/images/malabar_parotta.jpg"
+        image: "static/images/malabar_parotta.jpg"
     },
     {
         id: 14,
         name: "Chicken Chettinad",
         description: "A fiery, robust South Indian chicken curry packed with freshly roasted aromatic spices.",
         price: 220,
-        image: "/static/images/chicken_chettinad.jpg"
+        image: "static/images/chicken_chettinad.jpg"
     },
     {
         id: 15,
         name: "Mysore Pak",
         description: "A rich, melt-in-the-mouth traditional dessert made from generous amounts of ghee, sugar, and gram flour.",
         price: 50,
-        image: "/static/images/mysore_pak.jpg"
+        image: "static/images/mysore_pak.jpg"
     }
 ];
 
