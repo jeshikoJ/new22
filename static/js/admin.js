@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check if already logged in (using sessionStorage for temporary auth)
     if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-        showDashboard();
+        window.location.href = "admin_theme/dashboard/index.html";
     }
 
     loginForm.addEventListener('submit', (e) => {
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (user === ADMIN_USER && pass === ADMIN_PASS) {
             sessionStorage.setItem('adminLoggedIn', 'true');
-            showDashboard();
+            window.location.href = "admin_theme/dashboard/index.html";
         } else {
             loginError.style.display = 'block';
             loginForm.reset();
@@ -33,15 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hideDashboard();
     });
 
-    function showDashboard() {
-        loginContainer.style.display = 'none';
-        dashboardContainer.style.display = 'flex';
-        loginError.style.display = 'none';
-    }
-
     function hideDashboard() {
-        dashboardContainer.style.display = 'none';
-        loginContainer.style.display = 'flex';
         loginForm.reset();
     }
 });
