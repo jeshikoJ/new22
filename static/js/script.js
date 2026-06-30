@@ -324,3 +324,5 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addToCart = addToCart;
 window.changeQuantity = changeQuantity;
 window.removeFromCart = removeFromCart;
+window.checkoutOnline = checkoutOnline;
+window.checkoutWhatsApp = checkoutWhatsApp;
