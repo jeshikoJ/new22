@@ -125,6 +125,13 @@
                     <i class="fa-solid fa-check-circle"></i> Confirm Order
                 </button>
             </form>
+
+            <div id="success-message" style="display: none; text-align: center; padding: 2rem 0;">
+                <i class="fa-solid fa-circle-check" style="font-size: 5rem; color: #25D366; margin-bottom: 1rem;"></i>
+                <h2 style="color: var(--accent); margin-bottom: 1rem;">Your Order is Placed!</h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">Thank you for ordering with Hotel New Born. We are preparing your food right away.</p>
+                <a href="index.html" class="btn-primary" style="text-decoration: none;">Return to Menu</a>
+            </div>
         </div>
     </section>
 
@@ -216,9 +223,13 @@
                         timestamp: serverTimestamp()
                     });
                     
-                    alert("Your order has been placed successfully! We will prepare it right away.");
                     localStorage.removeItem('cart'); // Clear cart
-                    window.location.href = "index.html"; // Go back to home
+                    
+                    // Show success screen
+                    document.getElementById('checkout-form').style.display = 'none';
+                    document.getElementById('order-summary').style.display = 'none';
+                    document.querySelector('.checkout-header p').style.display = 'none';
+                    document.getElementById('success-message').style.display = 'block';
                     
                 } catch (error) {
                     console.error("Error adding document: ", error);
