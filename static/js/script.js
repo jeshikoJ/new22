@@ -139,12 +139,19 @@ function renderMenu() {
                     <span class="price">₹${item.price}</span>
                 </div>
                 <p class="item-desc">${item.description}</p>
-                <button class="add-to-cart" onclick="addToCart(${item.id})">
+                <button class="add-to-cart" data-id="${item.id}">
                     Add to Order
                 </button>
             </div>
         `;
         menuGrid.appendChild(itemEl);
+    });
+
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = parseInt(e.currentTarget.getAttribute('data-id'));
+            addToCart(id);
+        });
     });
 }
 
@@ -216,12 +223,20 @@ function updateCart() {
                 <div class="cart-item-price">₹${item.price} x ${item.quantity} = ₹${itemTotal}</div>
             </div>
             <div class="cart-item-controls">
-                <button class="qty-btn" onclick="changeQuantity(${item.id}, -1)">-</button>
+                <button class="qty-btn" data-action="minus" data-id="${item.id}">-</button>
                 <span>${item.quantity}</span>
-                <button class="qty-btn" onclick="changeQuantity(${item.id}, 1)">+</button>
+                <button class="qty-btn" data-action="plus" data-id="${item.id}">+</button>
             </div>
         `;
         cartItemsEl.appendChild(itemEl);
+    });
+    
+    document.querySelectorAll('.qty-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = parseInt(e.currentTarget.getAttribute('data-id'));
+            const action = e.currentTarget.getAttribute('data-action');
+            changeQuantity(id, action === 'plus' ? 1 : -1);
+        });
     });
     
     cartTotalEl.textContent = `₹${total}`;
