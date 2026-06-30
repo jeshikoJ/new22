@@ -122,7 +122,11 @@ const menuItems = [
     }
 ];
 
-let cart = [];
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
 
 // Initialize Menu
 function renderMenu() {
@@ -166,15 +170,17 @@ function addToCart(id) {
         cart.push({ ...item, quantity: 1 });
     }
     
+    saveCart();
     updateCart();
     
     // Smooth scroll to cart if not visible
     const cartSection = document.getElementById('cart-section');
-    cartSection.scrollIntoView({ behavior: 'smooth' });
+    if (cartSection) cartSection.scrollIntoView({ behavior: 'smooth' });
 }
 
 function removeFromCart(id) {
     cart = cart.filter(i => i.id !== id);
+    saveCart();
     updateCart();
 }
 
@@ -185,6 +191,7 @@ function changeQuantity(id, delta) {
         if (item.quantity <= 0) {
             removeFromCart(id);
         } else {
+            saveCart();
             updateCart();
         }
     }
@@ -246,11 +253,10 @@ function updateCart() {
     cartCountEl.textContent = totalItems;
 }
 
-// Delivery Modal Logic (Online Order)
+// Delivery Logic (Redirect to Online Order Path)
 function checkoutOnline() {
     if (cart.length === 0) return;
-    const modal = document.getElementById('delivery-modal');
-    modal.style.display = 'flex';
+    window.location.href = 'checkout.html';
 }
 
 // Direct WhatsApp Order
@@ -276,59 +282,13 @@ function checkoutWhatsApp() {
     window.open(whatsappUrl, '_blank');
 }
 
-async function handleOrderSubmission(e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('customer-name').value;
-    const phone = document.getElementById('customer-phone').value;
-    const address = document.getElementById('customer-address').value;
-    const confirmBtn = document.getElementById('confirm-order-btn');
-    
-    confirmBtn.disabled = true;
-    confirmBtn.textContent = 'Saving Order...';
-    
-    let total = 0;
-    let orderItems = [];
-    
-    cart.forEach(item => {
-        const itemTotal = item.price * item.quantity;
-        total += itemTotal;
-        orderItems.push({
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price,
-            total: itemTotal
-        });
-    });
-
-    try {
-        // Save to Firebase
-        await addDoc(collection(db, "orders"), {
-            customerName: name,
-            customerPhone: phone,
-            customerAddress: address,
-            items: orderItems,
-            totalAmount: total,
-            status: "Pending",
-            timestamp: serverTimestamp()
-        });
-        
-        // Success notification
-        alert("Your order has been placed successfully! We will prepare it right away.");
-        
-        // Clean up
-        document.getElementById('delivery-modal').style.display = 'none';
-        cart = [];
-        updateCart();
-        document.getElementById('delivery-form').reset();
-    } catch (error) {
-        console.error("Error adding document: ", error);
-        alert("There was an error saving your order. Please try again.");
-    } finally {
-        confirmBtn.disabled = false;
-        confirmBtn.textContent = 'Confirm Order';
-    }
+// Moved order submission logic to checkout.html specific script
+function clearCart() {
+    cart = [];
+    saveCart();
+    updateCart();
 }
+window.clearCart = clearCart;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -340,12 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const waBtn = document.getElementById('checkout-wa-btn');
     if (waBtn) waBtn.addEventListener('click', checkoutWhatsApp);
     
-    document.getElementById('delivery-form').addEventListener('submit', handleOrderSubmission);
-    
-    // Modal Close
-    document.querySelector('.close-modal').addEventListener('click', () => {
-        document.getElementById('delivery-modal').style.display = 'none';
-    });
+    updateCart(); // Load cart from localStorage on page load
     
     // Initialize 3D Tilt Automation
     VanillaTilt.init(document.querySelectorAll(".menu-item"), {

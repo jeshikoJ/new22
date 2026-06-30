@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Checkout | Hotel New Born</title>
+    <link rel="icon" type="image/jpeg" href="static/images/favicon.jpg">
+    <link rel="stylesheet" href="static/css/style.css?v=2">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .checkout-page {
+            padding: 100px 5% 50px 5%;
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .checkout-container {
+            background: var(--bg-card);
+            padding: 3rem;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+        }
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .checkout-header h1 {
+            color: var(--accent);
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+        }
+        .order-summary {
+            background: rgba(0,0,0,0.3);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .order-summary h3 {
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            outline: none;
+        }
+        .input-group textarea {
+            height: 100px;
+            resize: none;
+        }
+        .input-group input:focus, .input-group textarea:focus {
+            border-color: var(--accent);
+        }
+        .btn-checkout-submit {
+            width: 100%;
+            font-size: 1.2rem;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="logo">Hotel New Born</div>
+        <a href="index.html" class="btn-primary" style="text-decoration: none; padding: 0.5rem 1.5rem; font-size: 0.9rem;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Menu
+        </a>
+    </header>
+
+    <!-- Checkout Section -->
+    <section class="checkout-page">
+        <div class="checkout-container">
+            <div class="checkout-header">
+                <h1>Complete Your Order</h1>
+                <p>Fill in your delivery details below.</p>
+            </div>
+            
+            <div class="order-summary" id="order-summary">
+                <!-- Summary inserted here by JS -->
+            </div>
+
+            <form id="checkout-form">
+                <div class="input-group">
+                    <input type="text" id="customer-name" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <input type="tel" id="customer-phone" placeholder="Phone Number" required>
+                </div>
+                <div class="input-group">
+                    <textarea id="customer-address" placeholder="Complete Delivery Address" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary btn-checkout-submit" id="confirm-order-btn">
+                    <i class="fa-solid fa-check-circle"></i> Confirm Order
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Hotel New Born. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Checkout Logic Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyD0wfPJHbeTjkoEhmvLFI7taB53q6IgApI",
+          authDomain: "new-born-f2cb6.firebaseapp.com",
+          projectId: "new-born-f2cb6",
+          storageBucket: "new-born-f2cb6.firebasestorage.app",
+          messagingSenderId: "171649936148",
+          appId: "1:171649936148:web:ded54cc43e130cf987f001"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Read cart from localStorage
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            if (cart.length === 0) {
+                alert("Your cart is empty. Redirecting to menu.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            const summaryEl = document.getElementById('order-summary');
+            let total = 0;
+            let summaryHTML = '<h3>Order Summary</h3>';
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                summaryHTML += 
+                    <div class="summary-item">
+                        <span> + item.quantity + x  + item.name + </span>
+                        <span>? + itemTotal + </span>
+                    </div>
+                ;
+            });
+            
+            summaryHTML += 
+                <div class="summary-total">
+                    <span>Total Amount:</span>
+                    <span>? + total + </span>
+                </div>
+            ;
+            
+            summaryEl.innerHTML = summaryHTML;
+
+            // Handle submission
+            document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const name = document.getElementById('customer-name').value;
+                const phone = document.getElementById('customer-phone').value;
+                const address = document.getElementById('customer-address').value;
+                const confirmBtn = document.getElementById('confirm-order-btn');
+                
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving Order...';
+                
+                let orderItems = cart.map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price,
+                    total: item.price * item.quantity
+                }));
+
+                try {
+                    await addDoc(collection(db, "orders"), {
+                        customerName: name,
+                        customerPhone: phone,
+                        customerAddress: address,
+                        items: orderItems,
+                        totalAmount: total,
+                        status: "Pending",
+                        timestamp: serverTimestamp()
+                    });
+                    
+                    alert("Your order has been placed successfully! We will prepare it right away.");
+                    localStorage.removeItem('cart'); // Clear cart
+                    window.location.href = "index.html"; // Go back to home
+                    
+                } catch (error) {
+                    console.error("Error adding document: ", error);
+                    alert("There was an error saving your order. Please try again.");
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Confirm Order';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
