@@ -1,18 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyD0wfPJHbeTjkoEhmvLFI7taB53q6IgApI",
-  authDomain: "new-born-f2cb6.firebaseapp.com",
-  projectId: "new-born-f2cb6",
-  storageBucket: "new-born-f2cb6.firebasestorage.app",
-  messagingSenderId: "171649936148",
-  appId: "1:171649936148:web:ded54cc43e130cf987f001",
-  measurementId: "G-706ZL2PPPV"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Removed Firebase dependencies since we are now using a MongoDB Backend API
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('admin-login-form');
@@ -60,24 +46,28 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.reset();
     }
     
-    function fetchOrders() {
-        const ordersQuery = query(collection(db, "orders"), orderBy("timestamp", "desc"));
-        
-        onSnapshot(ordersQuery, (snapshot) => {
+    async function fetchOrders() {
+        try {
+            const response = await fetch('/api/orders');
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error("Failed to load orders");
+            }
+
             const tbody = document.querySelector('.recent-orders tbody');
             tbody.innerHTML = '';
             
             let totalSales = 0;
             let totalOrders = 0;
             
-            snapshot.forEach((doc) => {
-                const order = doc.data();
+            data.orders.forEach((order) => {
                 totalOrders++;
                 totalSales += order.totalAmount;
                 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>#${doc.id.substring(0,6).toUpperCase()}</td>
+                    <td>#${order._id.substring(order._id.length - 6).toUpperCase()}</td>
                     <td>
                         <strong>${order.customerName}</strong><br>
                         <small>${order.customerPhone}</small><br>
@@ -92,6 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update stats
             document.querySelectorAll('.stat-details p')[0].textContent = `₹${totalSales}`;
             document.querySelectorAll('.stat-details p')[1].textContent = totalOrders;
-        });
+        } catch (error) {
+            console.error("Error fetching orders:", error);
+            const tbody = document.querySelector('.recent-orders tbody');
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Failed to load orders from database.</td></tr>';
+        }
     }
 });

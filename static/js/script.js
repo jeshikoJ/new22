@@ -1,18 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyD0wfPJHbeTjkoEhmvLFI7taB53q6IgApI",
-  authDomain: "new-born-f2cb6.firebaseapp.com",
-  projectId: "new-born-f2cb6",
-  storageBucket: "new-born-f2cb6.firebasestorage.app",
-  messagingSenderId: "171649936148",
-  appId: "1:171649936148:web:ded54cc43e130cf987f001",
-  measurementId: "G-706ZL2PPPV"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Firebase has been removed in favor of MongoDB Backend
 
 const menuItems = [
     {
