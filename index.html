@@ -137,9 +137,14 @@
                     <span>Total:</span>
                     <span id="cart-total">₹0</span>
                 </div>
-                <button id="checkout-btn" class="btn-primary btn-checkout" disabled>
-                    <i class="fa-brands fa-whatsapp"></i> Order via WhatsApp
-                </button>
+                <div class="checkout-actions" style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button id="checkout-online-btn" class="btn-primary btn-checkout" style="flex: 1;" disabled>
+                        <i class="fa-solid fa-utensils"></i> Place Order Online
+                    </button>
+                    <button id="checkout-wa-btn" class="btn-primary btn-checkout" style="flex: 1; background-color: #25D366; border-color: #25D366;" disabled>
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -195,6 +200,6 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
-    <script type="module" src="static/js/script.js?v=3"></script>
+    <script type="module" src="static/js/script.js?v=4"></script>
 </body>
 </html>

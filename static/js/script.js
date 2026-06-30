@@ -194,17 +194,20 @@ function updateCart() {
     const cartItemsEl = document.getElementById('cart-items');
     const cartTotalEl = document.getElementById('cart-total');
     const cartCountEl = document.getElementById('cart-count');
-    const checkoutBtn = document.getElementById('checkout-btn');
+    const checkoutOnlineBtn = document.getElementById('checkout-online-btn');
+    const checkoutWaBtn = document.getElementById('checkout-wa-btn');
     
     if (cart.length === 0) {
         cartItemsEl.innerHTML = '<p class="empty-cart" style="text-align:center; color:var(--text-muted);">Your cart is empty.</p>';
         cartTotalEl.textContent = '₹0';
         cartCountEl.textContent = '0';
-        checkoutBtn.disabled = true;
+        if (checkoutOnlineBtn) checkoutOnlineBtn.disabled = true;
+        if (checkoutWaBtn) checkoutWaBtn.disabled = true;
         return;
     }
     
-    checkoutBtn.disabled = false;
+    if (checkoutOnlineBtn) checkoutOnlineBtn.disabled = false;
+    if (checkoutWaBtn) checkoutWaBtn.disabled = false;
     
     let total = 0;
     let totalItems = 0;
@@ -243,11 +246,34 @@ function updateCart() {
     cartCountEl.textContent = totalItems;
 }
 
-// Delivery Modal Logic
-function checkout() {
+// Delivery Modal Logic (Online Order)
+function checkoutOnline() {
     if (cart.length === 0) return;
     const modal = document.getElementById('delivery-modal');
     modal.style.display = 'flex';
+}
+
+// Direct WhatsApp Order
+function checkoutWhatsApp() {
+    if (cart.length === 0) return;
+    
+    let message = "Hello Hotel New Born, I would like to place an order:\n\n";
+    let total = 0;
+    
+    cart.forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        message += `${item.quantity}x ${item.name} - ₹${itemTotal}\n`;
+    });
+    
+    message += `\n*Total Amount: ₹${total}*\n`;
+    message += "\nPlease let me know the preparation time and payment details. Thank you!";
+    
+    const encodedMessage = encodeURIComponent(message);
+    const phoneNumber = "917395881571";
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+    
+    window.open(whatsappUrl, '_blank');
 }
 
 async function handleOrderSubmission(e) {
@@ -263,7 +289,6 @@ async function handleOrderSubmission(e) {
     
     let total = 0;
     let orderItems = [];
-    let message = `Hello Hotel New Born, I would like to place an order:\n\n*Delivery Details:*\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\n\n*Order:*\n`;
     
     cart.forEach(item => {
         const itemTotal = item.price * item.quantity;
@@ -274,10 +299,7 @@ async function handleOrderSubmission(e) {
             price: item.price,
             total: itemTotal
         });
-        message += `${item.quantity}x ${item.name} - ₹${itemTotal}\n`;
     });
-    
-    message += `\n*Total Amount: ₹${total}*\n`;
 
     try {
         // Save to Firebase
@@ -290,12 +312,9 @@ async function handleOrderSubmission(e) {
             status: "Pending",
             timestamp: serverTimestamp()
         });
-
-        // Open WhatsApp
-        const encodedMessage = encodeURIComponent(message);
-        const phoneNumber = "917395881571";
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-        window.open(whatsappUrl, '_blank');
+        
+        // Success notification
+        alert("Your order has been placed successfully! We will prepare it right away.");
         
         // Clean up
         document.getElementById('delivery-modal').style.display = 'none';
@@ -314,7 +333,13 @@ async function handleOrderSubmission(e) {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     renderMenu();
-    document.getElementById('checkout-btn').addEventListener('click', checkout);
+    
+    const onlineBtn = document.getElementById('checkout-online-btn');
+    if (onlineBtn) onlineBtn.addEventListener('click', checkoutOnline);
+    
+    const waBtn = document.getElementById('checkout-wa-btn');
+    if (waBtn) waBtn.addEventListener('click', checkoutWhatsApp);
+    
     document.getElementById('delivery-form').addEventListener('submit', handleOrderSubmission);
     
     // Modal Close
