@@ -338,3 +338,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// Expose functions to global scope for inline HTML onclick handlers
+window.addToCart = addToCart;
+window.changeQuantity = changeQuantity;
+window.removeFromCart = removeFromCart;
