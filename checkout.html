@@ -11,81 +11,117 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .checkout-page {
-            padding: 100px 5% 50px 5%;
+            padding: 120px 5% 50px 5%;
             min-height: 80vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .checkout-container {
-            background: var(--bg-card);
-            padding: 3rem;
-            border-radius: 15px;
-            width: 100%;
-            max-width: 600px;
-            border: 1px solid var(--border);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
         .checkout-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
         }
         .checkout-header h1 {
             color: var(--accent);
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        .checkout-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .checkout-form-container {
+            background: var(--bg-card);
+            padding: 3rem;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
         .order-summary {
-            background: rgba(0,0,0,0.3);
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            height: fit-content;
         }
         .order-summary h3 {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             color: var(--accent);
+            font-size: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 1rem;
         }
         .summary-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
             color: var(--text-muted);
+            font-size: 1.1rem;
         }
         .summary-total {
             display: flex;
             justify-content: space-between;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            font-size: 1.2rem;
-            font-weight: 600;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px dashed rgba(255,255,255,0.2);
+            font-size: 1.4rem;
+            font-weight: bold;
             color: #fff;
         }
         .input-group {
+            position: relative;
             margin-bottom: 1.5rem;
+        }
+        .input-group i {
+            position: absolute;
+            top: 1.2rem;
+            left: 1.2rem;
+            color: var(--text-muted);
+            font-size: 1.1rem;
         }
         .input-group input, .input-group textarea {
             width: 100%;
-            padding: 1rem;
+            padding: 1.2rem 1rem 1.2rem 3rem;
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(0, 0, 0, 0.3);
             color: var(--text-main);
             font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
             outline: none;
+            transition: all 0.3s ease;
         }
         .input-group textarea {
-            height: 100px;
+            height: 120px;
             resize: none;
+            padding-top: 1.2rem;
         }
         .input-group input:focus, .input-group textarea:focus {
             border-color: var(--accent);
+            background: rgba(0,0,0,0.5);
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.1);
+        }
+        .input-group input:focus + i, .input-group textarea:focus + i {
+            color: var(--accent);
         }
         .btn-checkout-submit {
             width: 100%;
             font-size: 1.2rem;
-            padding: 1rem;
+            padding: 1.2rem;
+            margin-top: 1rem;
+        }
+        @media (max-width: 768px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+            .checkout-page {
+                padding-top: 100px;
+            }
         }
     </style>
 </head>
@@ -101,37 +137,48 @@
 
     <!-- Checkout Section -->
     <section class="checkout-page">
-        <div class="checkout-container">
-            <div class="checkout-header">
-                <h1>Complete Your Order</h1>
-                <p>Fill in your delivery details below.</p>
-            </div>
+        <div class="checkout-header">
+            <h1>Secure Checkout</h1>
+            <p>Please review your order and enter delivery details.</p>
+        </div>
+
+        <div class="checkout-grid" id="checkout-grid">
             
+            <!-- Left Column: Form -->
+            <div class="checkout-form-container" id="form-container">
+                <form id="checkout-form">
+                    <div class="input-group">
+                        <input type="text" id="customer-name" placeholder="Full Name" required>
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="input-group">
+                        <input type="tel" id="customer-phone" placeholder="Phone Number" required>
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                    <div class="input-group">
+                        <textarea id="customer-address" placeholder="Complete Delivery Address (Door No, Street, Landmark)" required></textarea>
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <button type="submit" class="btn-primary btn-checkout-submit" id="confirm-order-btn">
+                        <i class="fa-solid fa-lock"></i> Place Secure Order
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Column: Order Summary -->
             <div class="order-summary" id="order-summary">
                 <!-- Summary inserted here by JS -->
             </div>
+            
+        </div>
 
-            <form id="checkout-form">
-                <div class="input-group">
-                    <input type="text" id="customer-name" placeholder="Full Name" required>
-                </div>
-                <div class="input-group">
-                    <input type="tel" id="customer-phone" placeholder="Phone Number" required>
-                </div>
-                <div class="input-group">
-                    <textarea id="customer-address" placeholder="Complete Delivery Address" required></textarea>
-                </div>
-                <button type="submit" class="btn-primary btn-checkout-submit" id="confirm-order-btn">
-                    <i class="fa-solid fa-check-circle"></i> Confirm Order
-                </button>
-            </form>
-
-            <div id="success-message" style="display: none; text-align: center; padding: 2rem 0;">
-                <i class="fa-solid fa-circle-check" style="font-size: 5rem; color: #25D366; margin-bottom: 1rem;"></i>
-                <h2 style="color: var(--accent); margin-bottom: 1rem;">Your Order is Placed!</h2>
-                <p style="color: var(--text-muted); margin-bottom: 2rem;">Thank you for ordering with Hotel New Born. We are preparing your food right away.</p>
-                <a href="index.html" class="btn-primary" style="text-decoration: none;">Return to Menu</a>
-            </div>
+        <div id="success-message" style="display: none; text-align: center; padding: 5rem 0;">
+            <i class="fa-solid fa-circle-check" style="font-size: 6rem; color: #25D366; margin-bottom: 1.5rem;"></i>
+            <h2 style="color: var(--accent); margin-bottom: 1rem; font-size: 2.5rem; font-family: 'Playfair Display', serif;">Your Order is Placed!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.2rem;">Thank you for ordering with Hotel New Born. Our chefs are preparing your food right away.</p>
+            <a href="index.html" class="btn-primary" style="text-decoration: none; padding: 1rem 2rem; font-size: 1.1rem;">
+                <i class="fa-solid fa-arrow-left"></i> Return to Menu
+            </a>
         </div>
     </section>
 
@@ -171,25 +218,25 @@
 
             const summaryEl = document.getElementById('order-summary');
             let total = 0;
-            let summaryHTML = '<h3>Order Summary</h3>';
+            let summaryHTML = '<h3><i class="fa-solid fa-receipt"></i> Order Summary</h3>';
             
             cart.forEach(item => {
                 const itemTotal = item.price * item.quantity;
                 total += itemTotal;
-                summaryHTML += 
+                summaryHTML += `
                     <div class="summary-item">
-                        <span> + item.quantity + x  + item.name + </span>
-                        <span>? + itemTotal + </span>
+                        <span>${item.quantity}x ${item.name}</span>
+                        <span>₹${itemTotal}</span>
                     </div>
-                ;
+                `;
             });
             
-            summaryHTML += 
+            summaryHTML += `
                 <div class="summary-total">
                     <span>Total Amount:</span>
-                    <span>? + total + </span>
+                    <span>₹${total}</span>
                 </div>
-            ;
+            `;
             
             summaryEl.innerHTML = summaryHTML;
 
@@ -226,8 +273,7 @@
                     localStorage.removeItem('cart'); // Clear cart
                     
                     // Show success screen
-                    document.getElementById('checkout-form').style.display = 'none';
-                    document.getElementById('order-summary').style.display = 'none';
+                    document.getElementById('checkout-grid').style.display = 'none';
                     document.querySelector('.checkout-header p').style.display = 'none';
                     document.getElementById('success-message').style.display = 'block';
                     
