@@ -1,3 +1,19 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD0wfPJHbeTjkoEhmvLFI7taB53q6IgApI",
+  authDomain: "new-born-f2cb6.firebaseapp.com",
+  projectId: "new-born-f2cb6",
+  storageBucket: "new-born-f2cb6.firebasestorage.app",
+  messagingSenderId: "171649936148",
+  appId: "1:171649936148:web:ded54cc43e130cf987f001",
+  measurementId: "G-706ZL2PPPV"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 const menuItems = [
     {
         id: 1,
@@ -212,33 +228,84 @@ function updateCart() {
     cartCountEl.textContent = totalItems;
 }
 
-// WhatsApp Checkout
+// Delivery Modal Logic
 function checkout() {
     if (cart.length === 0) return;
+    const modal = document.getElementById('delivery-modal');
+    modal.style.display = 'flex';
+}
+
+async function handleOrderSubmission(e) {
+    e.preventDefault();
     
-    let message = "Hello Hotel New Born, I would like to place an order:\n\n";
+    const name = document.getElementById('customer-name').value;
+    const phone = document.getElementById('customer-phone').value;
+    const address = document.getElementById('customer-address').value;
+    const confirmBtn = document.getElementById('confirm-order-btn');
+    
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Saving Order...';
+    
     let total = 0;
+    let orderItems = [];
+    let message = `Hello Hotel New Born, I would like to place an order:\n\n*Delivery Details:*\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\n\n*Order:*\n`;
     
     cart.forEach(item => {
         const itemTotal = item.price * item.quantity;
         total += itemTotal;
+        orderItems.push({
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            total: itemTotal
+        });
         message += `${item.quantity}x ${item.name} - ₹${itemTotal}\n`;
     });
     
     message += `\n*Total Amount: ₹${total}*\n`;
-    message += "\nPlease let me know the preparation time and payment details. Thank you!";
-    
-    const encodedMessage = encodeURIComponent(message);
-    const phoneNumber = "917395881571"; // User's WhatsApp number
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-    
-    window.open(whatsappUrl, '_blank');
+
+    try {
+        // Save to Firebase
+        await addDoc(collection(db, "orders"), {
+            customerName: name,
+            customerPhone: phone,
+            customerAddress: address,
+            items: orderItems,
+            totalAmount: total,
+            status: "Pending",
+            timestamp: serverTimestamp()
+        });
+
+        // Open WhatsApp
+        const encodedMessage = encodeURIComponent(message);
+        const phoneNumber = "917395881571";
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+        
+        // Clean up
+        document.getElementById('delivery-modal').style.display = 'none';
+        cart = [];
+        updateCart();
+        document.getElementById('delivery-form').reset();
+    } catch (error) {
+        console.error("Error adding document: ", error);
+        alert("There was an error saving your order. Please try again.");
+    } finally {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Confirm Order';
+    }
 }
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     renderMenu();
     document.getElementById('checkout-btn').addEventListener('click', checkout);
+    document.getElementById('delivery-form').addEventListener('submit', handleOrderSubmission);
+    
+    // Modal Close
+    document.querySelector('.close-modal').addEventListener('click', () => {
+        document.getElementById('delivery-modal').style.display = 'none';
+    });
     
     // Initialize 3D Tilt Automation
     VanillaTilt.init(document.querySelectorAll(".menu-item"), {

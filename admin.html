@@ -37,8 +37,96 @@
         </div>
     </div>
 
+    <!-- Dashboard Container (Hidden by default) -->
+    <div id="dashboard-container" class="dashboard-container" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="#"><i class="fa-solid fa-utensils"></i> Menu Items</a>
+                <a href="#"><i class="fa-solid fa-receipt"></i> Orders</a>
+                <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </div>
+        </aside>
 
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-title">Overview</div>
+                <div class="topbar-user">
+                    <span>Welcome, Admin</span>
+                    <div class="avatar"><i class="fa-solid fa-user-shield"></i></div>
+                </div>
+            </header>
+            
+            <div class="content-wrapper">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+                        <div class="stat-details">
+                            <h3>Total Sales</h3>
+                            <p>₹12,450</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-bell-concierge"></i></div>
+                        <div class="stat-details">
+                            <h3>Total Orders</h3>
+                            <p>148</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+                        <div class="stat-details">
+                            <h3>Reviews</h3>
+                            <p>4.8 / 5</p>
+                        </div>
+                    </div>
+                </div>
 
-    <script src="static/js/admin.js"></script>
+                <div class="recent-orders">
+                    <h3>Recent WhatsApp Orders</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#1024</td>
+                                <td>2x Ghee Roast Dosa, 1x Filter Coffee</td>
+                                <td>₹240</td>
+                                <td><span class="status completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>#1025</td>
+                                <td>1x Chicken Chettinad, 2x Malabar Parotta</td>
+                                <td>₹340</td>
+                                <td><span class="status pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>#1026</td>
+                                <td>1x South Indian Thali</td>
+                                <td>₹150</td>
+                                <td><span class="status completed">Completed</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="static/js/admin.js"></script>
 </body>
 </html>
