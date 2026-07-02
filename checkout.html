@@ -143,6 +143,8 @@
         </div>
 
         <div class="checkout-grid" id="checkout-grid">
+            
+            <!-- Left Column: Form -->
             <div class="checkout-form-container" id="form-container">
                 <form id="checkout-form">
                     <div class="input-group">
@@ -154,7 +156,7 @@
                         <i class="fa-solid fa-phone"></i>
                     </div>
                     <div class="input-group">
-                        <textarea id="customer-address" placeholder="Complete Delivery Address" required></textarea>
+                        <textarea id="customer-address" placeholder="Complete Delivery Address (Door No, Street, Landmark)" required></textarea>
                         <i class="fa-solid fa-location-dot"></i>
                     </div>
                     <button type="submit" class="btn-primary btn-checkout-submit" id="confirm-order-btn">
@@ -163,31 +165,38 @@
                 </form>
             </div>
 
-            <div class="order-summary" id="order-summary"></div>
+            <!-- Right Column: Order Summary -->
+            <div class="order-summary" id="order-summary">
+                <!-- Summary inserted here by JS -->
+            </div>
+            
         </div>
 
         <div id="success-message" style="display: none; text-align: center; padding: 5rem 0;">
             <i class="fa-solid fa-circle-check" style="font-size: 6rem; color: #25D366; margin-bottom: 1.5rem;"></i>
             <h2 style="color: var(--accent); margin-bottom: 1rem; font-size: 2.5rem; font-family: 'Playfair Display', serif;">Your Order is Placed!</h2>
-            <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.2rem;">Thank you for ordering. Our chefs are preparing your food.</p>
+            <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.2rem;">Thank you for ordering with Hotel New Born. Our chefs are preparing your food right away.</p>
             <a href="index.html" class="btn-primary" style="text-decoration: none; padding: 1rem 2rem; font-size: 1.1rem;">
                 <i class="fa-solid fa-arrow-left"></i> Return to Menu
             </a>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
         <div class="footer-bottom">
             <p>&copy; 2026 Hotel New Born. All rights reserved.</p>
         </div>
     </footer>
 
+    <!-- Checkout Logic Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Read cart from localStorage
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             
             if (cart.length === 0) {
-                alert("Your cart is empty.");
+                alert("Your cart is empty. Redirecting to menu.");
                 window.location.href = "index.html";
                 return;
             }
@@ -216,6 +225,7 @@
             
             summaryEl.innerHTML = summaryHTML;
 
+            // Handle submission
             document.getElementById('checkout-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
@@ -235,6 +245,7 @@
                 }));
 
                 try {
+                    // 1. Save to Supabase via serverless function
                     const response = await fetch('/api/orders', {
                         method: 'POST',
                         headers: {
@@ -250,28 +261,22 @@
                     });
                     
                     if (!response.ok) {
-                        throw new Error("Failed to save order");
+                        throw new Error("Failed to save order to database");
                     }
                     
-                    let message = `*NEW ONLINE ORDER - HOTEL NEW BORN*\n\n`;
-                    message += `👤 Name: ${name}\n`;
-                    message += `📞 Phone: ${phone}\n`;
-                    message += `📍 Address: ${address}\n\n`;
-                    cart.forEach(item => {
-                        message += `• ${item.quantity}x ${item.name}\n`;
-                    });
-                    message += `\n*Total: ₹${total}*`;
-                    
-                    window.open(`https://wa.me/917395881571?text=${encodeURIComponent(message)}`, '_blank');
-                    
+                    // 2. Clear cart
                     localStorage.removeItem('cart');
+                    
+                    // 3. Show success screen
                     document.getElementById('checkout-grid').style.display = 'none';
+                    document.querySelector('.checkout-header p').style.display = 'none';
                     document.getElementById('success-message').style.display = 'block';
                     
                 } catch (error) {
-                    alert("Error saving order. Please try again.");
+                    console.error("Error saving order: ", error);
+                    alert("There was an error saving your order. Please try again.");
                     confirmBtn.disabled = false;
-                    confirmBtn.innerHTML = 'Place Secure Order';
+                    confirmBtn.innerHTML = '<i class="fa-solid fa-lock"></i> Place Secure Order';
                 }
             });
         });
