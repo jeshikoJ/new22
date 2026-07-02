@@ -184,7 +184,54 @@
         </div>
     <!-- Delivery Modal -->
 
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#home" class="nav-item active" onclick="setNavActive(this)">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+        <a href="#menu" class="nav-item" onclick="setNavActive(this)">
+            <i class="fa-solid fa-utensils"></i>
+            <span>Menu</span>
+        </a>
+        <a href="#cart-section" class="nav-item" onclick="setNavActive(this)">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span>Cart</span>
+            <span class="nav-badge" id="mobile-cart-badge" style="display: none;">0</span>
+        </a>
+        <a href="#info" class="nav-item" onclick="setNavActive(this)">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <span>Visit</span>
+        </a>
+    </nav>
+
+    <!-- Floating Mobile Cart Bar -->
+    <div class="floating-cart-bar" id="floating-cart-bar">
+        <div class="cart-info">
+            <span id="floating-cart-desc">0 items | ₹0</span>
+        </div>
+        <a href="#cart-section" class="cart-btn" onclick="setNavActiveByHref('#cart-section')">
+            View Cart <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+
+    <script>
+        function setNavActive(elem) {
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
+            elem.classList.add('active');
+        }
+        function setNavActiveByHref(href) {
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+                if (item.getAttribute('href') === href) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+    </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
-    <script type="module" src="static/js/script.js?v=7"></script>
+    <script type="module" src="static/js/script.js?v=8"></script>
 </body>
 </html>

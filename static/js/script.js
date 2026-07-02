@@ -159,9 +159,7 @@ function addToCart(id) {
     saveCart();
     updateCart();
     
-    // Smooth scroll to cart if not visible
-    const cartSection = document.getElementById('cart-section');
-    if (cartSection) cartSection.scrollIntoView({ behavior: 'smooth' });
+    // Smooth scroll is removed for mobile-app mode, enabling seamless menu browsing.
 }
 
 function removeFromCart(id) {
@@ -190,12 +188,21 @@ function updateCart() {
     const checkoutOnlineBtn = document.getElementById('checkout-online-btn');
     const checkoutWaBtn = document.getElementById('checkout-wa-btn');
     
+    // Mobile Bottom Nav elements
+    const mobileBadge = document.getElementById('mobile-cart-badge');
+    const floatingCart = document.getElementById('floating-cart-bar');
+    const floatingDesc = document.getElementById('floating-cart-desc');
+    
     if (cart.length === 0) {
         cartItemsEl.innerHTML = '<p class="empty-cart" style="text-align:center; color:var(--text-muted);">Your cart is empty.</p>';
         cartTotalEl.textContent = '₹0';
         cartCountEl.textContent = '0';
         if (checkoutOnlineBtn) checkoutOnlineBtn.disabled = true;
         if (checkoutWaBtn) checkoutWaBtn.disabled = true;
+        
+        // Reset Mobile Badges
+        if (mobileBadge) mobileBadge.style.display = 'none';
+        if (floatingCart) floatingCart.classList.remove('active');
         return;
     }
     
@@ -237,6 +244,16 @@ function updateCart() {
     
     cartTotalEl.textContent = `₹${total}`;
     cartCountEl.textContent = totalItems;
+    
+    // Update Mobile Nav Badges & Floating Cart Bar
+    if (mobileBadge) {
+        mobileBadge.textContent = totalItems;
+        mobileBadge.style.display = 'block';
+    }
+    if (floatingCart && floatingDesc) {
+        floatingDesc.textContent = `${totalItems} item${totalItems > 1 ? 's' : ''} | ₹${total}`;
+        floatingCart.classList.add('active');
+    }
 }
 
 // Delivery Logic (Redirect to Online Order Path)
