@@ -3,7 +3,7 @@ const { createClient } = require('@supabase/supabase-js');
 // Initialize Supabase Client
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-
+// rebuild
 let supabase = null;
 
 if (supabaseUrl && supabaseKey) {
