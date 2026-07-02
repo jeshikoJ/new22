@@ -1,41 +1,16 @@
-const mongoose = require('mongoose');
+const { createClient } = require('@supabase/supabase-js');
 
-// MongoDB Connection caching for Serverless
-let cachedDb = null;
+// Initialize Supabase Client
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-async function connectToDatabase() {
-    if (cachedDb) return cachedDb;
-    
-    if (!process.env.MONGODB_URI) {
-        throw new Error('Please define the MONGODB_URI environment variable inside Vercel');
-    }
-    
-    const conn = await mongoose.connect(process.env.MONGODB_URI);
-    cachedDb = conn;
-    return conn;
+let supabase = null;
+
+if (supabaseUrl && supabaseKey) {
+    supabase = createClient(supabaseUrl, supabaseKey);
 }
 
-// Order Schema
-const OrderSchema = new mongoose.Schema({
-    customerName: String,
-    customerPhone: String,
-    customerAddress: String,
-    items: [{
-        name: String,
-        quantity: Number,
-        price: Number,
-        total: Number
-    }],
-    totalAmount: Number,
-    status: { type: String, default: 'Pending' },
-    timestamp: { type: Date, default: Date.now }
-});
-
-const Order = mongoose.models.Order || mongoose.model('Order', OrderSchema);
-
-// Serverless Handler
 module.exports = async (req, res) => {
-    // CORS headers
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -46,25 +21,48 @@ module.exports = async (req, res) => {
         return;
     }
 
-    try {
-        await connectToDatabase();
+    if (!supabase) {
+        return res.status(500).json({ 
+            success: false, 
+            error: 'Supabase URL or Key is missing.' 
+        });
+    }
 
+    try {
         if (req.method === 'POST') {
-            // Create new order
-            const order = new Order(req.body);
-            await order.save();
-            return res.status(201).json({ success: true, order });
+            const { customerName, customerPhone, customerAddress, items, totalAmount } = req.body;
+            
+            const { data, error } = await supabase
+                .from('orders')
+                .insert([
+                    {
+                        customer_name: customerName,
+                        customer_phone: customerPhone,
+                        customer_address: customerAddress,
+                        items: items,
+                        total_amount: totalAmount,
+                        status: 'Pending'
+                    }
+                ])
+                .select();
+
+            if (error) throw error;
+            return res.status(201).json({ success: true, order: data[0] });
         } 
         else if (req.method === 'GET') {
-            // Fetch all orders for admin dashboard
-            const orders = await Order.find().sort({ timestamp: -1 });
-            return res.status(200).json({ success: true, orders });
+            const { data, error } = await supabase
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            return res.status(200).json({ success: true, orders: data });
         }
         else {
             return res.status(405).json({ message: 'Method not allowed' });
         }
     } catch (error) {
-        console.error("Database Error:", error);
+        console.error("Supabase Error:", error);
         return res.status(500).json({ success: false, error: error.message });
     }
 };
