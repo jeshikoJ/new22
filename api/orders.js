@@ -24,7 +24,8 @@ module.exports = async (req, res) => {
     if (!supabase) {
         return res.status(500).json({ 
             success: false, 
-            error: 'Supabase URL or Key is missing.' 
+            error: 'Supabase URL or Key is missing.',
+            keysFound: Object.keys(process.env).filter(k => k.includes('SUPABASE') || k.includes('KEY') || k.includes('URL'))
         });
     }
 
