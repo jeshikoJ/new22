@@ -226,7 +226,7 @@
             summaryEl.innerHTML = summaryHTML;
 
             // Handle submission
-            document.getElementById('checkout-form').addEventListener('submit', (e) => {
+            document.getElementById('checkout-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
                 const name = document.getElementById('customer-name').value;
@@ -235,40 +235,71 @@
                 const confirmBtn = document.getElementById('confirm-order-btn');
                 
                 confirmBtn.disabled = true;
-                confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Redirecting to WhatsApp...';
+                confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving Order...';
                 
-                // Formulate WhatsApp message
-                let message = `*NEW ONLINE ORDER - HOTEL NEW BORN*\n\n`;
-                message += `*Customer Details:*\n`;
-                message += `👤 Name: ${name}\n`;
-                message += `📞 Phone: ${phone}\n`;
-                message += `📍 Address: ${address}\n\n`;
-                message += `*Order Summary:*\n`;
-                
-                let total = 0;
-                cart.forEach(item => {
-                    const itemTotal = item.price * item.quantity;
-                    total += itemTotal;
-                    message += `• ${item.quantity}x ${item.name} - ₹${itemTotal}\n`;
-                });
-                
-                message += `\n*Total Amount: ₹${total}*\n\n`;
-                message += `Please confirm my order and share preparation time. Thank you!`;
-                
-                const encodedMessage = encodeURIComponent(message);
-                const restaurantPhone = "917395881571";
-                const whatsappUrl = `https://wa.me/${restaurantPhone}?text=${encodedMessage}`;
-                
-                // Open WhatsApp in a new tab
-                window.open(whatsappUrl, '_blank');
-                
-                // Clear cart
-                localStorage.removeItem('cart');
-                
-                // Show success screen
-                document.getElementById('checkout-grid').style.display = 'none';
-                document.querySelector('.checkout-header p').style.display = 'none';
-                document.getElementById('success-message').style.display = 'block';
+                let orderItems = cart.map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price,
+                    total: item.price * item.quantity
+                }));
+
+                try {
+                    // 1. Save to Supabase via serverless function
+                    const response = await fetch('/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            customerName: name,
+                            customerPhone: phone,
+                            customerAddress: address,
+                            items: orderItems,
+                            totalAmount: total
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error("Failed to save order to database");
+                    }
+                    
+                    // 2. Formulate and open WhatsApp message in new tab
+                    let message = `*NEW ONLINE ORDER - HOTEL NEW BORN*\n\n`;
+                    message += `*Customer Details:*\n`;
+                    message += `👤 Name: ${name}\n`;
+                    message += `📞 Phone: ${phone}\n`;
+                    message += `📍 Address: ${address}\n\n`;
+                    message += `*Order Summary:*\n`;
+                    
+                    cart.forEach(item => {
+                        const itemTotal = item.price * item.quantity;
+                        message += `• ${item.quantity}x ${item.name} - ₹${itemTotal}\n`;
+                    });
+                    
+                    message += `\n*Total Amount: ₹${total}*\n\n`;
+                    message += `Please confirm my order and share preparation time. Thank you!`;
+                    
+                    const encodedMessage = encodeURIComponent(message);
+                    const restaurantPhone = "917395881571";
+                    const whatsappUrl = `https://wa.me/${restaurantPhone}?text=${encodedMessage}`;
+                    
+                    window.open(whatsappUrl, '_blank');
+                    
+                    // 3. Clear cart
+                    localStorage.removeItem('cart');
+                    
+                    // Show success screen
+                    document.getElementById('checkout-grid').style.display = 'none';
+                    document.querySelector('.checkout-header p').style.display = 'none';
+                    document.getElementById('success-message').style.display = 'block';
+                    
+                } catch (error) {
+                    console.error("Error saving order: ", error);
+                    alert("There was an error saving your order. Please try again.");
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerHTML = '<i class="fa-solid fa-lock"></i> Place Secure Order';
+                }
             });
         });
     </script>

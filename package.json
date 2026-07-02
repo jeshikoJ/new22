@@ -1,7 +1,11 @@
 {
   "name": "hotel-new-born",
   "version": "1.0.0",
-  "description": "Hotel New Born Frontend",
+  "description": "Hotel New Born Backend with Supabase",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "@supabase/ssr": "^0.0.10"
+  },
   "engines": {
     "node": ">=18.x"
   }
