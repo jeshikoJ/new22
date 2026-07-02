@@ -1,10 +1,7 @@
 {
   "name": "hotel-new-born",
   "version": "1.0.0",
-  "description": "Hotel New Born Backend",
-  "dependencies": {
-    "mongoose": "^8.2.0"
-  },
+  "description": "Hotel New Born Frontend",
   "engines": {
     "node": ">=18.x"
   }
